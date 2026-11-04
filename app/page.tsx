@@ -150,7 +150,7 @@ function Sidebar({
           <section key={group.label}>
             <h2 className="mb-2 px-3 text-[9px] font-bold tracking-[0.18em] text-slate-500">{group.label}</h2>
             <div className="space-y-1">
-              {group.items.map(({ label, icon: Icon, badge }) => (
+              {group.items.map(({ label, icon: Icon }) => (
                 <button
                   key={label}
                   onClick={() => {
@@ -161,7 +161,6 @@ function Sidebar({
                 >
                   <Icon size={16} strokeWidth={1.8} />
                   <span className="flex-1 text-left">{label}</span>
-                  {badge && <span className="rounded-md bg-white/[0.08] px-1.5 py-0.5 text-[10px] text-slate-300">{badge}</span>}
                 </button>
               ))}
             </div>
