@@ -13,7 +13,7 @@ ZSYSPRO HUB is an account-based learning workspace for mainframe professionals. 
 - Learning progress and account details are not shared across users.
 - Unconnected system telemetry, news, and vendor status are shown as **not connected**. They are not represented with invented live data.
 
-The login flow is real once the site owner provisions the database, deploys the API, and registers Google/Microsoft OAuth applications. Sign-in is via Google or Microsoft; this project does not accept users' Google/Microsoft passwords directly.
+The login flow is real once the site owner provisions the database, deploys the API, and registers at least the Google OAuth application. Microsoft sign-in is optional. This project does not accept users' Google/Microsoft passwords directly.
 
 ## Run locally
 
@@ -39,11 +39,11 @@ The API container applies Alembic migrations before starting. Check `http://loca
 
 ## Provider setup
 
-Create OAuth/OIDC web applications in Google Cloud Console and Microsoft Entra ID. Register the corresponding callback URL shown above for local use, and `https://<your-api-host>/auth/google/callback` or `https://<your-api-host>/auth/microsoft/callback` for production. Set the client IDs and secrets in the API environment; never put secrets in frontend variables or source control. Microsoft uses the `common` tenant by default; change `MICROSOFT_TENANT` if sign-in should be limited to a tenant.
+Create an OAuth/OIDC web application in Google Cloud Console. Register the corresponding callback URL shown above for local use, and `https://<your-api-host>/auth/google/callback` for production. Set its client ID and secret in the API environment; never put secrets in frontend variables or source control.
 
 ## Azure API deployment
 
-Create an Azure Database for PostgreSQL Flexible Server database and a Linux Azure App Service configured to run the `backend/Dockerfile` container. Configure these App Service environment settings:
+For a production deployment, create an Azure Database for PostgreSQL Flexible Server database and a Linux Azure App Service configured to run the `backend/Dockerfile` container. Configure these App Service environment settings:
 
 - `APP_ENV=production`
 - `DATABASE_URL=postgresql+asyncpg://...` for the Azure database, with SSL required by the database server (for example append `?ssl=require`)
@@ -51,10 +51,22 @@ Create an Azure Database for PostgreSQL Flexible Server database and a Linux Azu
 - `FRONTEND_URL=https://zosknowledge-hu.vercel.app` (replace with your final Vercel/custom-domain origin)
 - `BACKEND_URL=https://<your-api-host>.azurewebsites.net`
 - `ALLOWED_ORIGINS` set to the frontend origin
-- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `MICROSOFT_CLIENT_ID`, and `MICROSOFT_CLIENT_SECRET`
-- Optional `MICROSOFT_TENANT` and `JWT_TTL_MINUTES` (default: 720 minutes)
+- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
+- Optional `MICROSOFT_CLIENT_ID`, `MICROSOFT_CLIENT_SECRET`, `MICROSOFT_TENANT`, and `JWT_TTL_MINUTES` (default: 720 minutes)
 
 Set App Service's container port to `8000`. Azure's managed database and app service may incur charges; confirm current plan pricing before enabling production resources.
+
+## Free-tier backend for testing
+
+The root `render.yaml` is a Render Blueprint for a free FastAPI web service. It is intended for testing, not production: Render free web services spin down after 15 minutes without traffic and can take about a minute to wake. For a test database, create a free Neon PostgreSQL project; its free plan has usage limits. Review both providers' current terms and limits.
+
+1. Create a Neon project and copy its pooled or direct connection string. Use the SQLAlchemy async format `postgresql+asyncpg://...` and require TLS with `?ssl=require` (append it with `&` if the string already has query parameters).
+2. In Render, create a Blueprint from this repository's `ranjit` branch. Select the `zsyspro-hub-api` service and enter its environment values: `DATABASE_URL`, `JWT_SECRET`, `SESSION_SECRET`, and `BACKEND_URL`. Generate separate random secrets of at least 32 characters for the JWT and session secrets. Keep all secrets in Render's environment settings, not GitHub or Vercel.
+3. After Render gives the API its `https://<service>.onrender.com` address, set `BACKEND_URL` to that exact origin. In Google Cloud Console, create an OAuth client ID of type **Web application**, add `https://<service>.onrender.com/auth/google/callback` as an authorized redirect URI, and set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in Render.
+4. Wait for the Render service to deploy and verify `https://<service>.onrender.com/health` and `/ready`.
+5. In Vercel project settings, set the server-only `BACKEND_API_URL` to `https://<service>.onrender.com`, then redeploy the frontend. The Google button becomes available when the API reports Google credentials configured.
+
+Never paste OAuth credentials or generated secrets into chat. Do not use free-tier services for sensitive or production user data.
 
 ## Vercel frontend setup
 
