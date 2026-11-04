@@ -43,10 +43,14 @@ if settings.app_env.casefold() == "production":
         raise RuntimeError("SESSION_SECRET must be a unique, random value of at least 32 characters in production.")
     if settings.jwt_secret == settings.session_secret:
         raise RuntimeError("JWT_SECRET and SESSION_SECRET must be different values.")
-    if not settings.frontend_url.startswith("https://") or not settings.backend_url.startswith("https://"):
-        raise RuntimeError("FRONTEND_URL and BACKEND_URL must use HTTPS in production.")
-    if not (settings.google_client_id and settings.google_client_secret):
-        raise RuntimeError("Google OAuth client credentials must be configured in production.")
+    if not settings.frontend_url.startswith("https://"):
+        raise RuntimeError("FRONTEND_URL must use HTTPS in production.")
+    if (
+        settings.google_client_id
+        and settings.google_client_secret
+        and not settings.backend_url.startswith("https://")
+    ):
+        raise RuntimeError("BACKEND_URL must use HTTPS when Google sign-in is enabled.")
 
 COURSES = [
     {"slug": "jcl-fundamentals", "title": "JCL Fundamentals", "description": "Build and understand your first batch jobs.", "minutes": 18},
