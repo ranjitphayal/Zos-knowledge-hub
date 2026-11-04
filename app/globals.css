@@ -574,6 +574,195 @@ button {
   box-shadow: 0 8px 26px rgb(21 34 57 / 12%);
 }
 
+.auth-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  background:
+    radial-gradient(ellipse at 20% 5%, rgb(116 97 255 / 13%), transparent 40%),
+    radial-gradient(ellipse at 90% 90%, rgb(64 181 220 / 10%), transparent 40%),
+    #f5f7fb;
+  padding: 24px;
+}
+
+.auth-card {
+  width: min(100%, 430px);
+  border: 1px solid #e8ebf3;
+  border-radius: 20px;
+  background: white;
+  padding: 34px;
+  box-shadow: 0 18px 55px rgb(21 34 57 / 9%);
+}
+
+.auth-brand {
+  display: grid;
+  width: 43px;
+  height: 43px;
+  place-items: center;
+  border-radius: 13px;
+  background: linear-gradient(145deg, #8274ff, #594ee2);
+  color: white;
+  box-shadow: 0 8px 18px rgb(101 88 232 / 25%);
+}
+
+.auth-provider {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  border: 1px solid #e4e8f0;
+  border-radius: 10px;
+  background: white;
+  color: #29364d;
+  font-size: 13px;
+  font-weight: 650;
+  text-decoration: none;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.auth-provider:hover {
+  border-color: #bcb6ff;
+  background: #faf9ff;
+}
+
+.auth-provider-disabled {
+  cursor: not-allowed;
+  background: #f8f9fb;
+  color: #9aa3b3;
+  opacity: 0.75;
+}
+
+.auth-provider-disabled:hover {
+  border-color: #e4e8f0;
+  background: #f8f9fb;
+}
+
+.google-mark {
+  font-family: Arial, sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  color: #4285f4;
+}
+
+.microsoft-mark {
+  display: grid;
+  width: 16px;
+  height: 16px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+}
+
+.microsoft-mark i:nth-child(1) {
+  background: #f25022;
+}
+
+.microsoft-mark i:nth-child(2) {
+  background: #7fba00;
+}
+
+.microsoft-mark i:nth-child(3) {
+  background: #00a4ef;
+}
+
+.microsoft-mark i:nth-child(4) {
+  background: #ffb900;
+}
+
+.auth-message {
+  margin-top: 16px;
+  border: 1px solid #f2d3b1;
+  border-radius: 9px;
+  background: #fff8f0;
+  padding: 10px 12px;
+  color: #895b2e;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.auth-loading {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--canvas);
+  padding: 24px;
+  color: #78839a;
+  font-size: 13px;
+}
+
+.connection-pill {
+  flex: none;
+  border-radius: 20px;
+  background: #f1f3f6;
+  padding: 4px 7px;
+  color: #6f7a8d;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.lesson-page {
+  min-height: 100vh;
+  background: var(--canvas);
+  padding: 32px 18px;
+}
+
+.lesson-card {
+  width: min(100%, 820px);
+  margin: 0 auto;
+  padding: clamp(22px, 5vw, 46px);
+}
+
+.lesson-back,
+.lesson-primary,
+.lesson-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 650;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.lesson-back {
+  color: #68748a;
+}
+
+.lesson-back:hover {
+  color: #5549d0;
+}
+
+.lesson-primary {
+  min-height: 40px;
+  background: #6558e8;
+  padding: 0 15px;
+  color: white;
+}
+
+.lesson-primary:hover:not(:disabled) {
+  background: #5145d2;
+}
+
+.lesson-primary:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.lesson-secondary {
+  margin-top: 20px;
+  min-height: 38px;
+  border: 1px solid #e4e8f0;
+  padding: 0 12px;
+  color: #4b5870;
+}
+
+.lesson-secondary:hover {
+  background: #f7f8fb;
+}
+
 @keyframes pulse {
   0%, 100% {
     box-shadow: 0 0 0 0 rgb(53 183 124 / 35%);
@@ -704,6 +893,9 @@ button {
 }
 
 @media (max-width: 440px) {
+  .auth-card {
+    padding: 26px 21px;
+  }
   .content-grid > div:last-child {
     grid-template-columns: minmax(0, 1fr);
   }
