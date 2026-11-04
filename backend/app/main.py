@@ -47,8 +47,6 @@ if settings.app_env.casefold() == "production":
         raise RuntimeError("FRONTEND_URL and BACKEND_URL must use HTTPS in production.")
     if not (settings.google_client_id and settings.google_client_secret):
         raise RuntimeError("Google OAuth client credentials must be configured in production.")
-    if not (settings.microsoft_client_id and settings.microsoft_client_secret):
-        raise RuntimeError("Microsoft OAuth client credentials must be configured in production.")
 
 COURSES = [
     {"slug": "jcl-fundamentals", "title": "JCL Fundamentals", "description": "Build and understand your first batch jobs.", "minutes": 18},
