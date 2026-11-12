@@ -20,11 +20,16 @@ async def get_db():
         yield db
 
 
-def issue_jwt(user_id: int) -> str:
+def issue_jwt(user_id: int, token_version: int = 0) -> str:
     settings = get_settings()
     now = datetime.now(timezone.utc)
     return jwt.encode(
-        {"sub": str(user_id), "iat": now, "exp": now + timedelta(minutes=settings.jwt_ttl_minutes)},
+        {
+            "sub": str(user_id),
+            "ver": token_version,
+            "iat": now,
+            "exp": now + timedelta(minutes=settings.jwt_ttl_minutes),
+        },
         settings.jwt_secret,
         algorithm="HS256",
     )
@@ -44,6 +49,8 @@ async def get_current_user(
     user = await db.get(User, user_id)
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Account no longer exists.")
+    if payload.get("ver", 0) != user.token_version:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Session has been revoked.")
     return user
 
 
@@ -75,6 +82,7 @@ async def exchange_auth_code(code: str, db: AsyncSession) -> str:
     user_id = record.user_id
     await db.delete(record)
     await db.commit()
-    return issue_jwt(user_id)
-
-
+    user = await db.get(User, user_id)
+    if user is None:
+        raise HTTPException(status_code=401, detail="Account no longer exists.")
+    return issue_jwt(user_id, user.token_version)

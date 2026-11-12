@@ -16,6 +16,14 @@ class Settings(BaseSettings):
     microsoft_client_id: str | None = None
     microsoft_client_secret: str | None = None
     microsoft_tenant: str = "common"
+    smtp_host: str | None = None
+    smtp_port: int = Field(default=587, gt=0, le=65535)
+    smtp_username: str | None = None
+    smtp_password: str | None = None
+    smtp_from_email: str | None = None
+    smtp_from_name: str = "ZSYSPRO HUB"
+    smtp_use_ssl: bool = False
+    smtp_starttls: bool = True
     allowed_origins: str = "http://localhost:3000"
     jwt_ttl_minutes: int = Field(default=720, gt=0, le=1440)
 
@@ -24,6 +32,17 @@ class Settings(BaseSettings):
     @property
     def cors_origins(self) -> list[str]:
         return [origin.strip().rstrip("/") for origin in self.allowed_origins.split(",") if origin.strip()]
+
+    @property
+    def email_password_enabled(self) -> bool:
+        return all(
+            (
+                self.smtp_host,
+                self.smtp_username,
+                self.smtp_password,
+                self.smtp_from_email,
+            )
+        )
 
 
 @lru_cache

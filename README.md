@@ -9,11 +9,12 @@ ZSYSPRO HUB is an account-based learning workspace for mainframe professionals. 
 - Google and Microsoft OpenID Connect sign-in, backed by verified provider identities.
 - Short-lived, one-use sign-in codes exchanged server-side for a JWT held in a `Secure`, `HttpOnly`, `SameSite=Lax` browser cookie.
 - PostgreSQL user accounts and per-account learning progress.
+- Email/password account registration with Argon2 password hashing, email verification, and password reset through SMTP.
 - Dashboard stats and activity chart calculated from the signed-in user’s saved progress.
 - Learning progress and account details are not shared across users.
 - Unconnected system telemetry, news, and vendor status are shown as **not connected**. They are not represented with invented live data.
 
-The login flow is real once the site owner provisions the database, deploys the API, and registers at least the Google OAuth application. Microsoft sign-in is optional. This project does not accept users' Google/Microsoft passwords directly.
+The login flow is real once the site owner provisions the database, deploys the API, configures SMTP email, and registers at least the Google OAuth application. New email/password accounts must verify their address before signing in. Microsoft sign-in is optional. This project does not accept users' Google/Microsoft passwords directly.
 
 ## Run locally
 
@@ -66,7 +67,9 @@ The root `render.yaml` is a Render Blueprint for a free FastAPI web service. It 
 4. Wait for the Render service to deploy and verify `https://<service>.onrender.com/health` and `/ready`.
 5. In Vercel project settings, set the server-only `BACKEND_API_URL` to `https://<service>.onrender.com`, then redeploy the frontend. The Google button becomes available when the API reports Google credentials configured.
 
-Never paste OAuth credentials or generated secrets into chat. Do not use free-tier services for sensitive or production user data.
+6. To enable email/password registration, configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, and `SMTP_FROM_EMAIL` in Render. For standard STARTTLS mail, use port `587` and `SMTP_STARTTLS=true`; for implicit TLS, use port `465` and `SMTP_USE_SSL=true`. `SMTP_FROM_NAME` defaults to `ZSYSPRO HUB`. The sender address/domain must be permitted by your mail provider. Do not put SMTP credentials in Vercel or source control. Email signup and password reset stay unavailable until these SMTP settings are present.
+
+Never paste OAuth credentials, SMTP credentials, or generated secrets into chat. Do not use free-tier services for sensitive or production user data.
 
 ## Vercel frontend setup
 
@@ -82,4 +85,5 @@ The API stores an OAuth provider subject, name, email when provided, avatar URL,
 
 - Learning modules in this first iteration are a small introductory catalog; progress is saved when users explicitly mark a lesson complete.
 - There is no live IBM/vendor news feed or z/OS telemetry connector. Those integrations require trusted data sources and a separately designed, secured integration.
-- Self-service email/password registration, password reset, moderation, subscriptions, and ad integrations are not implemented.
+- SMTP delivery depends on the configured provider and its sending limits. Test verification and password-reset delivery before inviting users.
+- Moderation, subscriptions, and ad integrations are not implemented.

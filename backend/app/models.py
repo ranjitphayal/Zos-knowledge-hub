@@ -18,6 +18,9 @@ class User(Base):
     email: Mapped[str | None] = mapped_column(String(320), index=True)
     full_name: Mapped[str] = mapped_column(String(160), nullable=False)
     avatar_url: Mapped[str | None] = mapped_column(String(2048))
+    password_hash: Mapped[str | None] = mapped_column(String(512))
+    email_verified: Mapped[bool] = mapped_column(default=False, nullable=False, server_default="false")
+    token_version: Mapped[int] = mapped_column(default=0, nullable=False, server_default="0")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     learning_progress: Mapped[list["LearningProgress"]] = relationship(
@@ -30,6 +33,16 @@ class AuthCode(Base):
 
     code_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class EmailActionToken(Base):
+    __tablename__ = "email_action_tokens"
+
+    token_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    purpose: Mapped[str] = mapped_column(String(24), nullable=False)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
@@ -57,4 +70,3 @@ class LearningActivity(Base):
     course_slug: Mapped[str] = mapped_column(String(80), nullable=False)
     percent_complete: Mapped[int] = mapped_column(Integer, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
-
